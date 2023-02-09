@@ -1,5 +1,6 @@
 const e = require('express');
-const { User, Thought } = require('../models');
+const { User } = require('../models');
+const { Thought } = require('../models/Thought');
 
 module.exports = {
     //get all thoughts
@@ -26,7 +27,7 @@ module.exports = {
         Thought.create(req.body)
             .then((thought) => {
                 return User.findOneAndUpdate(
-                    { _id: req.body.userId },
+                    { userId: req.body.userId },
                     { $addToSet: { thoughts: thought } },
                     {new: true},
                 );
@@ -62,11 +63,11 @@ module.exports = {
                     res.status(404).json({ message: 'No Thought with that id' })
                 } else { 
                     User.findOneAndUpdate(
-                        { thoughts: req.params.thoughtId },
+                        { _id: thought.body.userId },
                         { $pull: { thoughts: req.params.thoughtId } },
                         { new: true }
                     )
-                };
+                }
             })
             .then((user) => {
                 if (!user) {
